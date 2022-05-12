@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"os"
@@ -32,7 +31,6 @@ func Validate(tok string) (*jwt.Token, error) {
 		case strings.Contains(err.Error(), "signature is invalid"):
 			return nil, ErrInvalidSignature
 		case strings.Contains(err.Error(), "Token is expired"):
-			fmt.Println("TOKEN EXPIRED")
 			return token, ErrTokenExpired
 		default:
 			return nil, err
@@ -43,13 +41,11 @@ func Validate(tok string) (*jwt.Token, error) {
 }
 
 func IsTokenExpired(token *jwt.Token) bool {
-	_, err := Validate(token.Raw)
+	return getExp(token) < time.Now().Unix()
+}
 
-	if err != nil {
-		return errors.Is(err, ErrTokenExpired)
-	}
-
-	return false
+func getExp(token *jwt.Token) int64 {
+	return int64(token.Claims.(jwt.MapClaims)["exp"].(float64))
 }
 
 func GetClaimString(token *jwt.Token, claim string) string {
