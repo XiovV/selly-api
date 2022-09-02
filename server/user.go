@@ -8,6 +8,24 @@ import (
 	"strings"
 )
 
+func (s *Server) generateToken(c *gin.Context) {
+	sellyId := c.Query("id")
+
+	if len(sellyId) < 64 {
+		s.log.Warnw("selly id query parameter has an invalid length", "expected", 64, "got", len(sellyId), "id", sellyId)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	newToken, err := jwt.New(sellyId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"access_token": newToken})
+}
+
 func (s *Server) refreshToken(c *gin.Context) {
 	tokenHeader := c.GetHeader("Authorization")
 
@@ -43,24 +61,6 @@ func (s *Server) refreshToken(c *gin.Context) {
 	newToken, err := jwt.New(sellyId)
 	if err != nil {
 		s.log.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"access_token": newToken})
-}
-
-func (s *Server) generateToken(c *gin.Context) {
-	sellyId := c.Query("id")
-
-	if len(sellyId) < 64 {
-		s.log.Warnw("selly id query parameter has an invalid length", "expected", 64, "got", len(sellyId), "id", sellyId)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
-		return
-	}
-
-	newToken, err := jwt.New(sellyId)
-	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
