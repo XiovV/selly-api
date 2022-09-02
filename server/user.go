@@ -9,13 +9,15 @@ import (
 )
 
 func (s *Server) generateToken(c *gin.Context) {
-	sellyId := c.Query("id")
+	hashedSeed := c.Query("id")
 
-	if len(sellyId) < 64 {
-		s.log.Warnw("selly id query parameter has an invalid length", "expected", 64, "got", len(sellyId), "id", sellyId)
+	if len(hashedSeed) < 64 {
+		s.log.Warnw("selly id query parameter has an invalid length", "expected", 64, "got", len(hashedSeed), "id", hashedSeed)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
+
+	sellyId := s.generateSellyID(hashedSeed)
 
 	newToken, err := jwt.New(sellyId)
 	if err != nil {
