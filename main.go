@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/XiovV/selly-api/redis"
 	"github.com/XiovV/selly-api/server"
 	"go.uber.org/zap"
 	"log"
@@ -23,8 +24,9 @@ func main() {
 	}
 	defer logger.Sync()
 
+	redis := redis.New()
 	sugar := logger.Sugar()
-	srv := server.New(sugar)
+	srv := server.New(redis, sugar)
 
 	sugar.Infow("running", "port", os.Getenv("PORT"), "environment", os.Getenv("ENV"), "version", version)
 

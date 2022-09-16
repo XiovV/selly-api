@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"net/http"
 )
 
 func (s *Server) getContextToken(c *gin.Context) *jwt.Token {
@@ -18,6 +19,17 @@ func (s *Server) getContextToken(c *gin.Context) *jwt.Token {
 	token := t.(*jwt.Token)
 
 	return token
+}
+
+func (s *Server) getContextSellyID(c *gin.Context) string {
+	sellyId, exists := c.Get("sellyId")
+	if !exists {
+		s.log.Errorw("selly id not in context")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return ""
+	}
+
+	return sellyId.(string)
 }
 
 func (s *Server) generateSellyID(hashedSeed string) string {

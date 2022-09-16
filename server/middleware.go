@@ -54,7 +54,9 @@ func (s *Server) validateToken() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("token", token)
+		sellyId := jwt.GetClaimString(token, "sellyId")
+
+		c.Set("sellyId", sellyId)
 
 		c.Next()
 	}

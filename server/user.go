@@ -8,6 +8,16 @@ import (
 	"strings"
 )
 
+func (s *Server) getMissedMessages(c *gin.Context) {
+	sellyId := s.getContextSellyID(c)
+
+	messages := s.redis.GetMessages(sellyId)
+
+	s.redis.DelUser(sellyId)
+
+	c.JSON(http.StatusOK, gin.H{"messages": messages})
+}
+
 func (s *Server) generateToken(c *gin.Context) {
 	hashedSeed := c.Query("id")
 
