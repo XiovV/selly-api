@@ -47,7 +47,7 @@ func (r *Redis) GetMessages(sellyId string) []Message {
 	for _, m := range res {
 		json.Unmarshal([]byte(m), &message)
 
-		messages = append([]Message{message}, messages...)
+		messages = append(messages, message)
 	}
 
 	return messages
