@@ -13,7 +13,7 @@ func (s *Server) getMissedMessages(c *gin.Context) {
 
 	messages := s.redis.GetMessages(sellyId)
 
-	s.redis.DelUser(sellyId)
+	go s.redis.DelUser(sellyId)
 
 	c.JSON(http.StatusOK, gin.H{"messages": messages})
 }
