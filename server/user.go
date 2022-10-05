@@ -13,6 +13,7 @@ func (s *Server) getMissedMessages(c *gin.Context) {
 
 	messages := s.redis.GetMessages(sellyId)
 
+	//TODO: consider using a worker pattern here
 	go s.redis.DelUser(sellyId)
 
 	c.JSON(http.StatusOK, gin.H{"messages": messages})
